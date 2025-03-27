@@ -1,0 +1,1266 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 222 47% 5%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 222 47% 5%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 199 89% 48%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 224 76% 48%;
+
+    --radius: 0.5rem;
+  }
+}
+
+/* Base styles */
+body {
+  font-family: "Inter", "SF Pro Display", Arial, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  background-color: #000;
+  color: #fff;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 增强的动态背景效果 */
+.tech-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(to right, rgba(14, 165, 233, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.07) 1px, transparent 1px);
+  background-size: 30px 30px;
+  z-index: -1;
+  animation: gridPulse 8s infinite alternate ease-in-out;
+}
+
+.tech-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 20% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+  z-index: -1;
+  filter: blur(40px);
+  opacity: 0.8;
+  animation: glowShift 15s infinite alternate ease-in-out;
+}
+
+/* 新增的动态背景元素 */
+.cyber-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -2;
+}
+
+.cyber-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: rgba(14, 165, 233, 0.6);
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: particleFloat 20s infinite linear;
+}
+
+.cyber-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -3;
+  opacity: 0.15;
+}
+
+.cyber-line {
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.8), rgba(79, 70, 229, 0.8), transparent);
+  animation: lineFloat 8s infinite linear;
+}
+
+/* 增强的星星效果 */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: #fff;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.star.small {
+  width: 1px;
+  height: 1px;
+  opacity: 0.6;
+}
+
+.star.medium {
+  width: 2px;
+  height: 2px;
+  opacity: 0.8;
+}
+
+.star.large {
+  width: 3px;
+  height: 3px;
+  opacity: 1;
+  box-shadow: 0 0 4px 1px rgba(14, 165, 233, 0.4);
+}
+
+/* 增强的文本渐变效果 */
+.text-gradient-blue {
+  background: linear-gradient(90deg, #0ea5e9, #06b6d4, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline;
+  background-size: 200% auto;
+  animation: textShine 3s linear infinite;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(90deg, #8b5cf6, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline;
+  background-size: 200% auto;
+  animation: textShine 3s linear infinite;
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(90deg, #06b6d4, #0ea5e9, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline;
+  background-size: 200% auto;
+  animation: textShine 3s linear infinite;
+}
+
+/* 增强的卡片效果 */
+.tech-card {
+  background: rgba(2, 6, 23, 0.85);
+  border-radius: 1rem;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(14, 165, 233, 0.1);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+
+.tech-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.5), rgba(79, 70, 229, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.tech-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.1), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.tech-card:hover::before {
+  opacity: 1;
+  animation: gradientFlow 2s linear infinite;
+}
+
+.tech-card:hover::after {
+  opacity: 0.5;
+}
+
+.tech-card:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(14, 165, 233, 0.2);
+  border-color: rgba(14, 165, 233, 0.3);
+  transform: translateY(-3px);
+}
+
+.tech-card-header {
+  background: rgba(2, 6, 23, 0.95);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.tech-card-header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.5), rgba(79, 70, 229, 0.5), transparent);
+  animation: gradientFlow 2s linear infinite;
+}
+
+/* 增强的特性卡片 */
+.tech-feature-card {
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-feature-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.1), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.tech-feature-card:hover::before {
+  opacity: 1;
+  animation: pulseRadial 2s infinite;
+}
+
+.tech-feature-card:hover {
+  background: rgba(14, 165, 233, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(14, 165, 233, 0.2);
+  animation: glowPulse 2s infinite;
+}
+
+/* 增强的标签页效果 */
+.tech-tabs {
+  display: flex;
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 9999px;
+  padding: 0.25rem;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-tabs::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.05), transparent 70%);
+  animation: rotateBg 10s infinite linear;
+}
+
+.tech-tabs::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.3), rgba(79, 70, 229, 0.3), transparent);
+  opacity: 0.5;
+}
+
+@keyframes rotateBg {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.tech-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.tech-tab.active {
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.3), rgba(6, 182, 212, 0.3), rgba(79, 70, 229, 0.3));
+  color: white;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.tech-tab:hover:not(.active) {
+  background: rgba(14, 165, 233, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 增强的按钮效果 */
+.tech-button-primary {
+  background: linear-gradient(90deg, #0ea5e9, #06b6d4, #4f46e5);
+  background-size: 200% auto;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-button-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.5s ease;
+}
+
+.tech-button-primary:hover::before {
+  left: 100%;
+}
+
+.tech-button-primary:hover {
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+  transform: translateY(-2px) scale(1.02);
+  background-position: right center;
+}
+
+.tech-button-primary:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.tech-button-outline {
+  background: rgba(2, 6, 23, 0.5);
+  color: #0ea5e9;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-button-outline::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #0ea5e9, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tech-button-outline:hover::after {
+  opacity: 1;
+  animation: gradientFlow 2s linear infinite;
+}
+
+.tech-button-outline:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: rgba(14, 165, 233, 0.5);
+  transform: translateY(-2px);
+  color: #38bdf8;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 5px rgba(14, 165, 233, 0.3);
+}
+
+.tech-button-outline:active {
+  transform: translateY(1px);
+}
+
+/* 增强的输入框效果 */
+.tech-input {
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tech-input:focus {
+  border-color: rgba(14, 165, 233, 0.6);
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+  background: rgba(14, 165, 233, 0.05);
+}
+
+.tech-input:hover:not(:focus) {
+  border-color: rgba(14, 165, 233, 0.5);
+  background: rgba(14, 165, 233, 0.05);
+}
+
+/* 增强的数据卡片样式 */
+.data-card {
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  padding: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.data-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #0ea5e9, #06b6d4, #4f46e5);
+  opacity: 0.7;
+}
+
+.data-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 10px rgba(14, 165, 233, 0.2);
+}
+
+/* 增强的霓虹文本效果 */
+.neon-text {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(14, 165, 233, 0.7), 0 0 10px rgba(14, 165, 233, 0.5);
+}
+
+.neon-text-purple {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(139, 92, 246, 0.7), 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.neon-text-cyan {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(6, 182, 212, 0.7), 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+/* 增强的霓虹边框效果 */
+.neon-border {
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  box-shadow: 0 0 5px rgba(14, 165, 233, 0.3), inset 0 0 5px rgba(14, 165, 233, 0.1);
+  animation: borderGlow 3s infinite alternate;
+}
+
+.neon-border-purple {
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 5px rgba(139, 92, 246, 0.3), inset 0 0 5px rgba(139, 92, 246, 0.1);
+  animation: borderGlowPurple 3s infinite alternate;
+}
+
+.neon-border-cyan {
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 5px rgba(6, 182, 212, 0.3), inset 0 0 5px rgba(6, 182, 212, 0.1);
+  animation: borderGlowCyan 3s infinite alternate;
+}
+
+/* 增强的浮动效果 */
+.float-effect {
+  animation: floatUp 3s infinite alternate ease-in-out;
+}
+
+.float-effect-slow {
+  animation: floatUp 5s infinite alternate ease-in-out;
+}
+
+.float-effect-fast {
+  animation: floatUp 2s infinite alternate ease-in-out;
+}
+
+/* 增强的高亮效果 */
+.highlight-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.highlight-effect::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.4), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.highlight-effect:hover::after {
+  opacity: 0.1;
+  animation: pulseRadial 2s infinite;
+}
+
+/* 新增的动画效果 */
+@keyframes textShine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.8);
+  }
+}
+
+@keyframes gridPulse {
+  0% {
+    opacity: 0.5;
+    background-size: 30px 30px;
+  }
+  100% {
+    opacity: 0.7;
+    background-size: 32px 32px;
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    border-color: rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.2), inset 0 0 5px rgba(14, 165, 233, 0.1);
+  }
+  50% {
+    border-color: rgba(14, 165, 233, 0.5);
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.4), inset 0 0 5px rgba(14, 165, 233, 0.2);
+  }
+  100% {
+    border-color: rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.2), inset 0 0 5px rgba(14, 165, 233, 0.1);
+  }
+}
+
+@keyframes borderGlowPurple {
+  0% {
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2), inset 0 0 5px rgba(139, 92, 246, 0.1);
+  }
+  50% {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4), inset 0 0 5px rgba(139, 92, 246, 0.2);
+  }
+  100% {
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2), inset 0 0 5px rgba(139, 92, 246, 0.1);
+  }
+}
+
+@keyframes borderGlowCyan {
+  0% {
+    border-color: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 0 5px rgba(6, 182, 212, 0.2), inset 0 0 5px rgba(6, 182, 212, 0.1);
+  }
+  50% {
+    border-color: rgba(6, 182, 212, 0.5);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.4), inset 0 0 5px rgba(6, 182, 212, 0.2);
+  }
+  100% {
+    border-color: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 0 5px rgba(6, 182, 212, 0.2), inset 0 0 5px rgba(6, 182, 212, 0.1);
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseRadial {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+@keyframes glowShift {
+  0% {
+    opacity: 0.6;
+    background-position: 0% 0%;
+  }
+  50% {
+    opacity: 0.8;
+    background-position: 100% 100%;
+  }
+  100% {
+    opacity: 0.6;
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(100px);
+    opacity: 0;
+  }
+}
+
+@keyframes lineFloat {
+  0% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(2, 6, 23, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #0ea5e9, #4f46e5);
+  border-radius: 3px;
+  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #0284c7, #4338ca);
+}
+
+/* 全局样式覆盖，确保没有白色背景 */
+.radix-themes {
+  --background: rgba(2, 6, 23, 0.85);
+  --color: white;
+}
+
+[data-radix-popper-content-wrapper] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+  color: white !important;
+}
+
+input,
+textarea,
+select {
+  background-color: rgba(2, 6, 23, 0.7) !important;
+  color: white !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
+}
+
+[role="dialog"] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  color: white !important;
+}
+
+table,
+th,
+td {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+[role="menu"],
+[role="listbox"] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  color: white !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+}
+
+/* 修复上传文档和粘贴功能被遮挡的问题
+
+根据您的描述，上传文档、提供文档URL和粘贴需求文本功能都无法使用，可能是被最外层div遮挡。检查代码后，我发现在 `globals.css` 文件中有一个语法错误，同时也需要修改页面布局以确保交互元素可以正常工作。
+
+### 1. 首先修复 globals.css 中的语法错误：
+```css
+/* 修复第802-806行的语法错误 */
+button:not(.tech-button-primary):not(.tech-button-outline) {
+  background-color: rgba(2, 6, 23, 0.7) !important;
+  color: rgba(14, 165, 233, 0.8) !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
+}
+
+.tech-button-outline:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: rgba(14, 165, 233, 0.5);
+  transform: translateY(-2px);
+  color: #38bdf8;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 5px rgba(14, 165, 233, 0.3);
+}
+
+.tech-button-outline:active {
+  transform: translateY(1px);
+}
+
+/* 增强的输入框效果 */
+.tech-input {
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tech-input:focus {
+  border-color: rgba(14, 165, 233, 0.6);
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+  background: rgba(14, 165, 233, 0.05);
+}
+
+.tech-input:hover:not(:focus) {
+  border-color: rgba(14, 165, 233, 0.5);
+  background: rgba(14, 165, 233, 0.05);
+}
+
+/* 增强的数据卡片样式 */
+.data-card {
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  padding: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.data-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #0ea5e9, #06b6d4, #4f46e5);
+  opacity: 0.7;
+}
+
+.data-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 10px rgba(14, 165, 233, 0.2);
+}
+
+/* 增强的霓虹文本效果 */
+.neon-text {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(14, 165, 233, 0.7), 0 0 10px rgba(14, 165, 233, 0.5);
+}
+
+.neon-text-purple {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(139, 92, 246, 0.7), 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.neon-text-cyan {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(6, 182, 212, 0.7), 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+/* 增强的霓虹边框效果 */
+.neon-border {
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  box-shadow: 0 0 5px rgba(14, 165, 233, 0.3), inset 0 0 5px rgba(14, 165, 233, 0.1);
+  animation: borderGlow 3s infinite alternate;
+}
+
+.neon-border-purple {
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 5px rgba(139, 92, 246, 0.3), inset 0 0 5px rgba(139, 92, 246, 0.1);
+  animation: borderGlowPurple 3s infinite alternate;
+}
+
+.neon-border-cyan {
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 5px rgba(6, 182, 212, 0.3), inset 0 0 5px rgba(6, 182, 212, 0.1);
+  animation: borderGlowCyan 3s infinite alternate;
+}
+
+/* 增强的浮动效果 */
+.float-effect {
+  animation: floatUp 3s infinite alternate ease-in-out;
+}
+
+.float-effect-slow {
+  animation: floatUp 5s infinite alternate ease-in-out;
+}
+
+.float-effect-fast {
+  animation: floatUp 2s infinite alternate ease-in-out;
+}
+
+/* 增强的高亮效果 */
+.highlight-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.highlight-effect::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.4), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.highlight-effect:hover::after {
+  opacity: 0.1;
+  animation: pulseRadial 2s infinite;
+}
+
+/* 新增的动画效果 */
+@keyframes textShine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.8);
+  }
+}
+
+@keyframes gridPulse {
+  0% {
+    opacity: 0.5;
+    background-size: 30px 30px;
+  }
+  100% {
+    opacity: 0.7;
+    background-size: 32px 32px;
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    border-color: rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.2), inset 0 0 5px rgba(14, 165, 233, 0.1);
+  }
+  50% {
+    border-color: rgba(14, 165, 233, 0.5);
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.4), inset 0 0 5px rgba(14, 165, 233, 0.2);
+  }
+  100% {
+    border-color: rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 5px rgba(14, 165, 233, 0.2), inset 0 0 5px rgba(14, 165, 233, 0.1);
+  }
+}
+
+@keyframes borderGlowPurple {
+  0% {
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2), inset 0 0 5px rgba(139, 92, 246, 0.1);
+  }
+  50% {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4), inset 0 0 5px rgba(139, 92, 246, 0.2);
+  }
+  100% {
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2), inset 0 0 5px rgba(139, 92, 246, 0.1);
+  }
+}
+
+@keyframes borderGlowCyan {
+  0% {
+    border-color: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 0 5px rgba(6, 182, 212, 0.2), inset 0 0 5px rgba(6, 182, 212, 0.1);
+  }
+  50% {
+    border-color: rgba(6, 182, 212, 0.5);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.4), inset 0 0 5px rgba(6, 182, 212, 0.2);
+  }
+  100% {
+    border-color: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 0 5px rgba(6, 182, 212, 0.2), inset 0 0 5px rgba(6, 182, 212, 0.1);
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseRadial {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+@keyframes glowShift {
+  0% {
+    opacity: 0.6;
+    background-position: 0% 0%;
+  }
+  50% {
+    opacity: 0.8;
+    background-position: 100% 100%;
+  }
+  100% {
+    opacity: 0.6;
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(100px);
+    opacity: 0;
+  }
+}
+
+@keyframes lineFloat {
+  0% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(2, 6, 23, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #0ea5e9, #4f46e5);
+  border-radius: 3px;
+  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #0284c7, #4338ca);
+}
+
+/* 全局样式覆盖，确保没有白色背景 */
+.radix-themes {
+  --background: rgba(2, 6, 23, 0.85);
+  --color: white;
+}
+
+[data-radix-popper-content-wrapper] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+  color: white !important;
+}
+
+input,
+textarea,
+select {
+  background-color: rgba(2, 6, 23, 0.7) !important;
+  color: white !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
+}
+
+[role="dialog"] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  color: white !important;
+}
+
+table,
+th,
+td {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+[role="menu"],
+[role="listbox"] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  color: white !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+}
+
+button:not(.tech-button-primary):not(.tech-button-outline) {
+  background-color: rgba(2, 6, 23, 0.7) !important;
+  color: rgba(14, 165, 233, 0.8) !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
+}
+
+.card,
+[role="dialog"] {
+  background-color: rgba(2, 6, 23, 0.85) !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+}
+
+[role="tooltip"] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  color: white !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+}
+
+[role="tabpanel"] {
+  background-color: rgba(2, 6, 23, 0.85) !important;
+  color: white !important;
+}
+
+[role="tab"] {
+  background-color: rgba(2, 6, 23, 0.7) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[role="tab"][data-state="active"] {
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.3), rgba(6, 182, 212, 0.3), rgba(79, 70, 229, 0.3));
+  color: white !important;
+}
+
+.prose {
+  background-color: rgba(2, 6, 23, 0.7) !important;
+  color: white !important;
+}
+
+header,
+.header,
+[role="banner"] {
+  background-color: rgba(2, 6, 23, 0.9) !important;
+  color: white !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+}
+
+main,
+.main,
+[role="main"] {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+* {
+  background-color: transparent;
+}
+
+.prose pre {
+  background-color: rgba(2, 6, 23, 0.8) !important;
+}
+
+.prose code {
+  background-color: rgba(14, 165, 233, 0.1) !important;
+  color: rgba(14, 165, 233, 0.8) !important;
+}
+
+.prose p,
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6,
+.prose li {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-radix-tabs-content] {
+  background-color: transparent !important;
+}
+
