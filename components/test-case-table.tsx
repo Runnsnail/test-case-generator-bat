@@ -26,11 +26,46 @@ import { useToast } from "@/hooks/use-toast"
 import FileSaver from "file-saver"
 import * as XLSX from "xlsx"
 import { TestCase } from "@/types/test-case"
-import { fetchTestCases, createTestCase, updateTestCaseById, deleteTestCaseById, deleteMultipleTestCases } from "@/services/test-case-service"
+// 移除后端服务导入
+// import { fetchTestCases, createTestCase, updateTestCaseById, deleteTestCaseById, deleteMultipleTestCases } from "@/services/test-case-service"
+
+// 模拟初始测试用例数据
+const initialTestCases: TestCase[] = [
+  {
+    id: 1,
+    testId: "TC-001",
+    description: "验证用户使用有效凭据登录",
+    preconditions: "系统中存在用户账户",
+    steps: "1. 导航到登录页面\n2. 输入有效用户名\n3. 输入有效密码\n4. 点击登录按钮",
+    expectedResult: "用户成功登录并重定向到仪表板",
+    priority: "高",
+    status: "通过"
+  },
+  {
+    id: 2,
+    testId: "TC-002",
+    description: "验证用户使用无效凭据登录",
+    preconditions: "系统中存在用户账户",
+    steps: "1. 导航到登录页面\n2. 输入无效用户名或密码\n3. 点击登录按钮",
+    expectedResult: "显示错误消息，用户无法登录",
+    priority: "高",
+    status: "通过"
+  },
+  {
+    id: 3,
+    testId: "TC-003",
+    description: "验证用户密码重置功能",
+    preconditions: "系统中存在用户账户",
+    steps: "1. 导航到登录页面\n2. 点击忘记密码链接\n3. 输入注册邮箱\n4. 点击发送重置链接按钮",
+    expectedResult: "重置密码链接发送到用户邮箱",
+    priority: "中",
+    status: "未测试"
+  }
+]
 
 export default function TestCaseTable() {
-  const [testCases, setTestCases] = useState<TestCase[]>([])
-  const [loading, setLoading] = useState(true)
+  const [testCases, setTestCases] = useState<TestCase[]>(initialTestCases)
+  const [loading, setLoading] = useState(false) // 修改为默认false
   const [editMode, setEditMode] = useState<Record<number, boolean>>({})
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string | null>(null)
@@ -55,15 +90,38 @@ export default function TestCaseTable() {
     const getTestCases = async () => {
       try {
         setLoading(true)
-        const data = await fetchTestCases()
-        setTestCases(data)
-      } catch (error) {
-        toast({
-          title: "获取测试用例失败",
-          description: "无法从服务器获取测试用例数据",
-          variant: "destructive",
-        })
-        console.error("获取测试用例失败:", error)
+        // 尝试从服务器获取数据，如果失败则使用本地数据
+        try {
+          const data = await fetchTestCases()
+          setTestCases(data)
+        } catch (error) {
+          console.warn("无法从服务器获取数据，使用本地数据")
+          // 如果本地没有数据，则初始化一些示例数据
+          if (testCases.length === 0) {
+            setTestCases([
+              {
+                id: 1,
+                testId: "TC-001",
+                description: "验证用户登录功能",
+                preconditions: "系统中存在有效用户账号",
+                steps: "1. 打开登录页面\n2. 输入有效用户名和密码\n3. 点击登录按钮",
+                expectedResult: "用户成功登录系统，跳转到首页",
+                priority: "高",
+                status: "通过"
+              },
+              {
+                id: 2,
+                testId: "TC-002",
+                description: "验证无效用户登录",
+                preconditions: "系统中不存在该用户账号",
+                steps: "1. 打开登录页面\n2. 输入无效用户名和密码\n3. 点击登录按钮",
+                expectedResult: "系统显示错误信息，提示用户名或密码错误",
+                priority: "中",
+                status: "通过"
+              }
+            ])
+          }
+        }
       } finally {
         setLoading(false)
       }
@@ -79,114 +137,80 @@ export default function TestCaseTable() {
     }))
   }
 
-  const updateTestCase = async (id: number, field: string, value: string) => {
-    // 先在本地更新
-    const updatedTestCases = testCases.map((tc) => 
-      tc.id === id ? { ...tc, [field]: value } : tc
-    )
-    setTestCases(updatedTestCases)
+  // 移除 async 关键字
+  const updateTestCase = (id: number, field: string, value: string) => {
+  // 在本地更新
+  const updatedTestCases = testCases.map((tc) => 
+    tc.id === id ? { ...tc, [field]: value } : tc
+  )
+  setTestCases(updatedTestCases)
+  
+  // 如果是编辑模式结束，显示提示
+  if (field === "_editComplete") {
+    toast({
+      title: "测试用例已更新",
+      description: "测试用例已成功更新。",
+      variant: "default",
+    })
+  }
+  }
+
+  const addNewTestCase = () => {
+    // 生成新的ID
+    const maxId = Math.max(...testCases.map(tc => tc.id), 0)
+    const newId = maxId + 1
     
-    // 如果是编辑模式结束，则发送更新请求
-    if (field === "_editComplete") {
-      try {
-        const testCaseToUpdate = updatedTestCases.find(tc => tc.id === id)
-        if (testCaseToUpdate) {
-          await updateTestCaseById(id, testCaseToUpdate)
-          toast({
-            title: "测试用例已更新",
-            description: "测试用例已成功保存到服务器。",
-            variant: "default",
-          })
-        }
-      } catch (error) {
-        toast({
-          title: "更新测试用例失败",
-          description: "无法保存测试用例更新",
-          variant: "destructive",
-        })
-        console.error("更新测试用例失败:", error)
-      }
+    // 创建新测试用例对象
+    const testCaseToAdd = {
+      id: newId,
+      testId: newTestCase.testId || `TC-${String(newId).padStart(3, '0')}`,
+      description: newTestCase.description,
+      preconditions: newTestCase.preconditions,
+      steps: newTestCase.steps,
+      expectedResult: newTestCase.expectedResult,
+      priority: newTestCase.priority,
+      status: newTestCase.status,
     }
+
+    // 直接更新状态
+    setTestCases([...testCases, testCaseToAdd])
+    setIsAddDialogOpen(false)
+
+    // 重置表单
+    setNewTestCase({
+      testId: "",
+      description: "",
+      preconditions: "",
+      steps: "",
+      expectedResult: "",
+      priority: "中",
+      status: "未测试",
+    })
+
+    toast({
+      title: "测试用例已添加",
+      description: "新的测试用例已成功添加到列表中。",
+      variant: "default",
+    })
   }
 
-  const addNewTestCase = async () => {
-    try {
-      const response = await createTestCase({
-        testId: newTestCase.testId || `TC-${String(Date.now()).slice(-6)}`,
-        description: newTestCase.description,
-        preconditions: newTestCase.preconditions,
-        steps: newTestCase.steps,
-        expectedResult: newTestCase.expectedResult,
-        priority: newTestCase.priority,
-        status: newTestCase.status,
-      })
-
-      setTestCases([...testCases, response])
-      setIsAddDialogOpen(false)
-
-      // 重置表单
-      setNewTestCase({
-        testId: "",
-        description: "",
-        preconditions: "",
-        steps: "",
-        expectedResult: "",
-        priority: "中",
-        status: "未测试",
-      })
-
-      toast({
-        title: "测试用例已添加",
-        description: "新的测试用例已成功添加到列表中。",
-        variant: "default",
-      })
-    } catch (error) {
-      toast({
-        title: "添加测试用例失败",
-        description: "无法添加新的测试用例",
-        variant: "destructive",
-      })
-      console.error("添加测试用例失败:", error)
-    }
+  const deleteTestCase = (id: number) => {
+    setTestCases((prev) => prev.filter((tc) => tc.id !== id))
+    toast({
+      title: "测试用例已删除",
+      description: "测试用例已从列表中移除。",
+      variant: "default",
+    })
   }
 
-  const deleteTestCase = async (id: number) => {
-    try {
-      await deleteTestCaseById(id)
-      setTestCases((prev) => prev.filter((tc) => tc.id !== id))
-      toast({
-        title: "测试用例已删除",
-        description: "测试用例已从列表中移除。",
-        variant: "default",
-      })
-    } catch (error) {
-      toast({
-        title: "删除测试用例失败",
-        description: "无法删除测试用例",
-        variant: "destructive",
-      })
-      console.error("删除测试用例失败:", error)
-    }
-  }
-
-  const deleteSelectedTestCases = async () => {
-    try {
-      await deleteMultipleTestCases(selectedTestCases)
-      setTestCases((prev) => prev.filter((tc) => !selectedTestCases.includes(tc.id)))
-      setSelectedTestCases([])
-      toast({
-        title: "批量删除完成",
-        description: `已删除 ${selectedTestCases.length} 个测试用例。`,
-        variant: "default",
-      })
-    } catch (error) {
-      toast({
-        title: "批量删除失败",
-        description: "无法删除选中的测试用例",
-        variant: "destructive",
-      })
-      console.error("批量删除失败:", error)
-    }
+  const deleteSelectedTestCases = () => {
+    setTestCases((prev) => prev.filter((tc) => !selectedTestCases.includes(tc.id)))
+    setSelectedTestCases([])
+    toast({
+      title: "批量删除完成",
+      description: `已删除 ${selectedTestCases.length} 个测试用例。`,
+      variant: "default",
+    })
   }
 
   const toggleSelectAll = () => {
@@ -235,7 +259,7 @@ export default function TestCaseTable() {
     })
   }
 
-  // 修改exportToExcel函数
+  // 保留导出Excel功能
   const exportToExcel = () => {
     // 创建工作簿
     const workbook = XLSX.utils.book_new()
@@ -281,7 +305,7 @@ export default function TestCaseTable() {
     })
   }
 
-  // 修改importFromExcel函数
+  // 保留导入Excel功能
   const importFromExcel = () => {
     // 创建文件输入元素
     const fileInput = document.createElement("input")
@@ -368,7 +392,7 @@ export default function TestCaseTable() {
             />
           </div>
           
-          <Select value={statusFilter || ""} onValueChange={(value) => setStatusFilter(value || null)}>
+          <Select value={statusFilter || "all"} onValueChange={(value) => setStatusFilter(value === "all" ? null : value)}>
             <SelectTrigger className="w-[130px] tech-input">
               <SelectValue placeholder="状态筛选" />
             </SelectTrigger>
@@ -380,7 +404,7 @@ export default function TestCaseTable() {
             </SelectContent>
           </Select>
 
-          <Select value={priorityFilter || ""} onValueChange={(value) => setPriorityFilter(value || null)}>
+          <Select value={priorityFilter || "all"} onValueChange={(value) => setPriorityFilter(value === "all" ? null : value)}>
             <SelectTrigger className="w-[130px] tech-input">
               <SelectValue placeholder="优先级筛选" />
             </SelectTrigger>
@@ -543,175 +567,130 @@ export default function TestCaseTable() {
               className="gap-1 secondary-button"
             >
               <Trash2 className="h-4 w-4" />
-              删除所选 ({selectedTestCases.length})
+              删除选中 ({selectedTestCases.length})
             </Button>
           )}
-
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={importFromExcel}
-            title="导入Excel"
-            className="tech-button-outline hover:bg-blue-900/30 hover:text-blue-400"
-          >
-            <FileUp className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={exportToExcel}
-            title="导出Excel"
-            className="tech-button-outline hover:bg-blue-900/30 hover:text-blue-400"
-          >
+          
+          <Button variant="outline" size="sm" onClick={exportToExcel} className="gap-1 tech-button-outline">
             <FileDown className="h-4 w-4" />
+            导出Excel
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={importFromExcel} className="gap-1 tech-button-outline">
+            <FileUp className="h-4 w-4" />
+            导入Excel
           </Button>
         </div>
       </div>
 
-      <div className="border rounded-md overflow-x-auto border-blue-500/20 bg-blue-950/30 backdrop-blur-sm tech-card relative z-20" style={{ pointerEvents: 'auto' }}>
-        <Table className="w-full border-collapse border-spacing-0">
+      <div className="border rounded-lg overflow-hidden tech-card relative z-[50]" style={{ pointerEvents: 'auto' }}>
+        <Table>
           <TableHeader>
-            <TableRow className="border-b border-blue-500/20">
-              <TableHead className="w-[40px] bg-blue-950/50">
+            <TableRow>
+              <TableHead className="w-[40px]">
                 <Checkbox
                   checked={selectedTestCases.length > 0 && selectedTestCases.length === filteredTestCases.length}
                   onCheckedChange={toggleSelectAll}
-                  className="relative z-30"
+                  className="tech-checkbox relative z-[51]"
                   style={{ pointerEvents: 'auto' }}
                 />
               </TableHead>
-              <TableHead
-                className="w-[100px] cursor-pointer text-blue-300 font-semibold bg-blue-950/50"
-                onClick={() => handleSort("testId")}
-              >
-                <div className="flex items-center gap-1">
+              <TableHead className="w-[100px] cursor-pointer" onClick={() => handleSort("testId")}>
+                <div className="flex items-center">
                   测试ID
-                  {sortField === "testId" && <ArrowUpDown className="h-3 w-3" />}
+                  {sortField === "testId" && (
+                    <ArrowUpDown className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                  )}
                 </div>
               </TableHead>
-              <TableHead
-                className="w-[250px] cursor-pointer text-blue-300 bg-blue-950/50"
-                onClick={() => handleSort("description")}
-              >
-                <div className="flex items-center gap-1">
+              <TableHead className="cursor-pointer" onClick={() => handleSort("description")}>
+                <div className="flex items-center">
                   描述
-                  {sortField === "description" && <ArrowUpDown className="h-3 w-3" />}
+                  {sortField === "description" && (
+                    <ArrowUpDown className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                  )}
                 </div>
               </TableHead>
-              <TableHead className="w-[200px] text-blue-300 bg-blue-950/50">前置条件</TableHead>
-              <TableHead className="w-[250px] text-blue-300 bg-blue-950/50">测试步骤</TableHead>
-              <TableHead className="w-[250px] text-blue-300 bg-blue-950/50">预期结果</TableHead>
-              <TableHead
-                className="w-[100px] cursor-pointer text-blue-300 bg-blue-950/50"
-                onClick={() => handleSort("priority")}
-              >
-                <div className="flex items-center gap-1">
+              <TableHead className="w-[100px] cursor-pointer" onClick={() => handleSort("priority")}>
+                <div className="flex items-center">
                   优先级
-                  {sortField === "priority" && <ArrowUpDown className="h-3 w-3" />}
+                  {sortField === "priority" && (
+                    <ArrowUpDown className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                  )}
                 </div>
               </TableHead>
-              <TableHead
-                className="w-[100px] cursor-pointer text-blue-300 bg-blue-950/50"
-                onClick={() => handleSort("status")}
-              >
-                <div className="flex items-center gap-1">
+              <TableHead className="w-[100px] cursor-pointer" onClick={() => handleSort("status")}>
+                <div className="flex items-center">
                   状态
-                  {sortField === "status" && <ArrowUpDown className="h-3 w-3" />}
+                  {sortField === "status" && (
+                    <ArrowUpDown className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                  )}
                 </div>
               </TableHead>
-              <TableHead className="w-[120px] text-blue-300 bg-blue-950/50">操作</TableHead>
+              <TableHead className="w-[100px] text-right">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <AnimatePresence>
-              {filteredTestCases.map((testCase) => (
-                <motion.tr
-                  key={testCase.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`${selectedTestCases.includes(testCase.id) ? "bg-blue-900/30" : "bg-blue-950/20 hover:bg-blue-900/20"} border-b border-blue-500/10`}
-                >
-                  <TableCell className="border-r border-blue-500/10">
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-24 text-center">
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                    <span className="ml-2">加载中...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : filteredTestCases.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-24 text-center">
+                  未找到测试用例
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredTestCases.map((testCase) => (
+                <TableRow key={testCase.id} className="tech-table-row">
+                  <TableCell>
                     <Checkbox
                       checked={selectedTestCases.includes(testCase.id)}
                       onCheckedChange={() => toggleSelectTestCase(testCase.id)}
-                      className="relative z-30"
+                      className="tech-checkbox relative z-[51]"
                       style={{ pointerEvents: 'auto' }}
                     />
                   </TableCell>
-                  <TableCell className="border-r border-blue-500/10">
+                  <TableCell className="font-mono">
                     {editMode[testCase.id] ? (
                       <Input
                         value={testCase.testId}
                         onChange={(e) => updateTestCase(testCase.id, "testId", e.target.value)}
-                        className="h-8 tech-input relative z-30"
+                        className="tech-input h-8 relative z-[51]"
                         style={{ pointerEvents: 'auto' }}
                       />
                     ) : (
-                      <span className="font-medium text-white">{testCase.testId}</span>
+                      testCase.testId
                     )}
                   </TableCell>
-                  <TableCell className="border-r border-blue-500/10">
+                  <TableCell>
                     {editMode[testCase.id] ? (
                       <Input
                         value={testCase.description}
                         onChange={(e) => updateTestCase(testCase.id, "description", e.target.value)}
-                        className="h-8 tech-input relative z-30"
+                        className="tech-input h-8 relative z-[51]"
                         style={{ pointerEvents: 'auto' }}
                       />
                     ) : (
                       testCase.description
                     )}
                   </TableCell>
-                  <TableCell className="border-r border-blue-500/10">
-                    {editMode[testCase.id] ? (
-                      <Input
-                        value={testCase.preconditions}
-                        onChange={(e) => updateTestCase(testCase.id, "preconditions", e.target.value)}
-                        className="h-8 tech-input relative z-30"
-                        style={{ pointerEvents: 'auto' }}
-                      />
-                    ) : (
-                      testCase.preconditions
-                    )}
-                  </TableCell>
-                  <TableCell className="border-r border-blue-500/10">
-                    {editMode[testCase.id] ? (
-                      <Textarea
-                        value={testCase.steps}
-                        onChange={(e) => updateTestCase(testCase.id, "steps", e.target.value)}
-                        className="h-20 min-h-0 tech-input relative z-30"
-                        style={{ pointerEvents: 'auto' }}
-                      />
-                    ) : (
-                      <div className="whitespace-pre-line text-sm text-gray-200">{testCase.steps}</div>
-                    )}
-                  </TableCell>
-                  <TableCell className="border-r border-blue-500/10">
-                    {editMode[testCase.id] ? (
-                      <Input
-                        value={testCase.expectedResult}
-                        onChange={(e) => updateTestCase(testCase.id, "expectedResult", e.target.value)}
-                        className="h-8 tech-input relative z-30"
-                        style={{ pointerEvents: 'auto' }}
-                      />
-                    ) : (
-                      testCase.expectedResult
-                    )}
-                  </TableCell>
-                  <TableCell className="border-r border-blue-500/10">
+                  <TableCell>
                     {editMode[testCase.id] ? (
                       <Select
                         value={testCase.priority}
                         onValueChange={(value) => updateTestCase(testCase.id, "priority", value)}
                       >
-                        <SelectTrigger className="h-8 tech-input relative z-30" style={{ pointerEvents: 'auto' }}>
+                        <SelectTrigger className="tech-input h-8 relative z-[51]" style={{ pointerEvents: 'auto' }}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-blue-950/90 backdrop-blur-md text-white relative z-50">
+                        <SelectContent className="bg-blue-950/90 backdrop-blur-md text-white z-[52]">
                           <SelectItem value="高">高</SelectItem>
                           <SelectItem value="中">中</SelectItem>
                           <SelectItem value="低">低</SelectItem>
@@ -719,28 +698,29 @@ export default function TestCaseTable() {
                       </Select>
                     ) : (
                       <Badge
-                        className={`${
+                        variant={
                           testCase.priority === "高"
-                            ? "bg-red-500/20 text-red-300 hover:bg-red-500/30 border-red-500/40"
+                            ? "destructive"
                             : testCase.priority === "中"
-                              ? "bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 border-yellow-500/40"
-                              : "bg-green-500/20 text-green-300 hover:bg-green-500/30 border-green-500/40"
-                        } border neon-border`}
+                            ? "default"
+                            : "outline"
+                        }
+                        className="tech-badge"
                       >
                         {testCase.priority}
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="border-r border-blue-500/10">
+                  <TableCell>
                     {editMode[testCase.id] ? (
                       <Select
                         value={testCase.status}
                         onValueChange={(value) => updateTestCase(testCase.id, "status", value)}
                       >
-                        <SelectTrigger className="h-8 tech-input relative z-30" style={{ pointerEvents: 'auto' }}>
+                        <SelectTrigger className="tech-input h-8 relative z-[51]" style={{ pointerEvents: 'auto' }}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-blue-950/90 backdrop-blur-md text-white relative z-50">
+                        <SelectContent className="bg-blue-950/90 backdrop-blur-md text-white z-[52]">
                           <SelectItem value="通过">通过</SelectItem>
                           <SelectItem value="失败">失败</SelectItem>
                           <SelectItem value="未测试">未测试</SelectItem>
@@ -748,88 +728,76 @@ export default function TestCaseTable() {
                       </Select>
                     ) : (
                       <Badge
-                        className={`${
+                        variant={
                           testCase.status === "通过"
-                            ? "bg-green-500/30 text-green-300 hover:bg-green-500/40 border-green-500/50"
+                            ? "success"
                             : testCase.status === "失败"
-                              ? "bg-red-500/30 text-red-300 hover:bg-red-500/40 border-red-500/50"
-                              : "bg-gray-500/30 text-gray-300 hover:bg-gray-500/40 border-gray-500/50"
-                        } border font-medium neon-border`}
+                            ? "destructive"
+                            : "outline"
+                        }
+                        className="tech-badge"
                       >
                         {testCase.status}
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-1">
-                      {editMode[testCase.id] ? (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleEditMode(testCase.id)}
-                            className="h-8 w-8 p-0 tech-button-outline bg-green-900/20 hover:bg-green-900/40 relative z-30"
-                            style={{ pointerEvents: 'auto' }}
-                          >
-                            <Save className="h-4 w-4 text-green-400" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleEditMode(testCase.id)}
-                            className="h-8 w-8 p-0 tech-button-outline bg-red-900/20 hover:bg-red-900/40 relative z-30"
-                            style={{ pointerEvents: 'auto' }}
-                          >
-                            <X className="h-4 w-4 text-red-400" />
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleEditMode(testCase.id)}
-                            className="h-8 w-8 p-0 tech-button-outline bg-green-900/20 hover:bg-green-900/40 relative z-20"
-                            style={{ pointerEvents: 'auto' }}
-                          >
-                            <PenLine className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteTestCase(testCase.id)}
-                            className="h-8 w-8 p-0 tech-button-outline hover:bg-red-900/20 hover:text-red-400 relative z-20"
-                            style={{ pointerEvents: 'auto' }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
-                    </div>
+                  <TableCell className="text-right space-x-1">
+                    {editMode[testCase.id] ? (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            updateTestCase(testCase.id, "_editComplete", "")
+                            toggleEditMode(testCase.id)
+                          }}
+                          className="h-8 w-8 tech-button-icon relative z-[51]"
+                          style={{ pointerEvents: 'auto' }}
+                        >
+                          <Save className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => toggleEditMode(testCase.id)}
+                          className="h-8 w-8 tech-button-icon-destructive relative z-[51]"
+                          style={{ pointerEvents: 'auto' }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => toggleEditMode(testCase.id)}
+                          className="h-8 w-8 tech-button-icon relative z-[51]"
+                          style={{ pointerEvents: 'auto' }}
+                        >
+                          <PenLine className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteTestCase(testCase.id)}
+                          className="h-8 w-8 tech-button-icon-destructive relative z-[51]"
+                          style={{ pointerEvents: 'auto' }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
                   </TableCell>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-
-            {filteredTestCases.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center text-blue-200/50">
-                  没有找到匹配的测试用例
-                </TableCell>
-              </TableRow>
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
       </div>
 
-      <div className="text-blue-200/70 bg-blue-950/30 p-3 rounded-lg backdrop-blur-sm border border-blue-500/30 font-medium neon-border">
-        <div className="flex justify-between items-center">
-          <div>
-            显示 <span className="text-blue-300 font-mono">{filteredTestCases.length}</span> 个测试用例（共{" "}
-            <span className="text-blue-300 font-mono">{testCases.length}</span> 个）
-          </div>
-          <div className="text-sm">提示：点击列标题可以排序，使用筛选器可以过滤测试用例</div>
-        </div>
+      <div className="text-sm text-gray-500">
+        共 {filteredTestCases.length} 个测试用例 {selectedTestCases.length > 0 && `(已选择 ${selectedTestCases.length} 个)`}
       </div>
     </div>
   )
